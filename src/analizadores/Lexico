@@ -1,0 +1,88 @@
+package analizadores;
+import java_cup.runtime.Symbol; 
+
+%% 
+
+%eofval{
+    {System.out.printf("FIN DE ARCHIVO\n");}
+    {System.exit(0); }
+%eofval}
+
+%class Lexico
+%public 
+%line 
+%char 
+%cup 
+%unicode
+
+%init{ 
+    yyline = 1; 
+    yychar = 1; 
+%init} 
+
+SALTO = [\n\r]
+DIGITO = [0-9]
+LETRA = [a-zA-ZÑñ]
+TITULO = "Titulo:"(.*|".")
+MOV = ("#"|"@")
+TURN = ("$"|"&")
+NOM_PARAM = [a-z]({LETRA}|{DIGITO})*
+NOM_SIMBOL = [A-Z]{DIGITO}*
+NUMERO = {DIGITO}+("."{DIGITO}+)?
+TYPE = ("Real"|"Int")
+COMENTARIOS = "Comentarios"({LETRA}|" "|{DIGITO}|{SALTO}|.)*"."
+
+%%
+
+":="			{return new Symbol(sym.OP_ASSIGN,yyline, yychar, yytext());}
+"+"				{return new Symbol(sym.OP_SUMA,yyline, yychar, yytext());}
+"-"				{return new Symbol(sym.OP_RESTA,yyline, yychar, yytext());}
+"*"				{return new Symbol(sym.OP_PRODUCTO,yyline, yychar, yytext());}
+"/"				{return new Symbol(sym.OP_DIVISION,yyline, yychar, yytext());}
+"%"				{return new Symbol(sym.OP_MOD,yyline, yychar, yytext());}
+"^"				{return new Symbol(sym.OP_POTENCIA,yyline, yychar, yytext());}
+"log"			{return new Symbol(sym.OP_LOG,yyline, yychar, yytext());}
+"AND"			{System.out.println("encontre un and"); return new Symbol(sym.OP_AND,yyline, yychar, yytext());}
+"OR"			{return new Symbol(sym.OP_OR,yyline, yychar, yytext());}
+"<"				{return new Symbol(sym.OP_MENOR,yyline, yychar, yytext());}
+">"				{return new Symbol(sym.OP_MAYOR,yyline, yychar, yytext());}
+"="  			{System.out.println("IGUAL"); return new Symbol(sym.OP_IGUAL,yyline, yychar, yytext());}
+"=!"			{return new Symbol(sym.OP_DIF,yyline, yychar, yytext());}
+
+":"    			{return new Symbol(sym.DOSPTS,yyline, yychar, yytext());}
+","  			{return new Symbol(sym.COMA,yyline, yychar, yytext());}
+"->"    		{return new Symbol(sym.FLECHA,yyline, yychar, yytext());}
+"--" 			{return new Symbol(sym.DOBLERAYA,yyline, yychar, yytext());}
+"{"  			{return new Symbol(sym.PUSH,yyline, yychar, yytext());}
+"}"   			{return new Symbol(sym.POP,yyline, yychar, yytext());}
+"("    			{return new Symbol(sym.LP,yyline, yychar, yytext());}
+")"				{return new Symbol(sym.RP,yyline, yychar, yytext());}
+[" "\t]+		{}
+
+"Gramatica" 	{return new Symbol(sym.GRAMATICA,yyline, yychar, yytext());}
+"Condiciones"   {return new Symbol(sym.CONDICIONES,yyline, yychar, yytext());}
+"matriz"    	{return new Symbol(sym.MATRIZ,yyline, yychar, yytext());}
+"generatriz"    {return new Symbol(sym.GENERATRIZ,yyline, yychar, yytext());}
+"parametro" 	{return new Symbol(sym.PARAMETRO,yyline, yychar, yytext());}
+"pasos" 		{return new Symbol(sym.PASOS,yyline, yychar, yytext());}
+"angulo"    	{return new Symbol(sym.ANGULO,yyline, yychar, yytext());}
+"posicion"  	{return new Symbol(sym.POSICION,yyline, yychar, yytext());}
+"valor" 		{return new Symbol(sym.VALOR,yyline, yychar, yytext());}
+"simbolo"   	{return new Symbol(sym.SIMBOLO,yyline, yychar, yytext());}
+"probabilidad"  {return new Symbol(sym.PROBABILIDAD,yyline, yychar, yytext());}
+"Fin"   		{return new Symbol(sym.FIN,yyline, yychar, yytext());}
+
+{SALTO}    		{yychar=1;}
+{SALTO}{SALTO}  {yychar=1;return new Symbol(sym.DOBLESALTO,yyline, yychar, yytext());}
+
+{TITULO}   		{return new Symbol(sym.TITULO,yyline, yychar, yytext().substring(7,yytext().length()-1));}
+{COMENTARIOS}   {System.out.println(yytext()); return new Symbol(sym.COMENTARIOS,yyline, yychar, yytext());}
+{TYPE}  		{return new Symbol(sym.TYPE,yyline, yychar, yytext());}
+{NUMERO}  		{return new Symbol(sym.NUMERO, yyline, yychar, new Float(yytext()));}
+{MOV}   		{return new Symbol(sym.MOV,yyline, yychar, yytext());}
+{TURN}  		{return new Symbol(sym.TURN,yyline, yychar, yytext());}
+{NOM_SIMBOL}    {return new Symbol(sym.NOM_SIMBOL,yyline, yychar, yytext());}
+{NOM_PARAM} 	{return new Symbol(sym.NOM_PARAM,yyline, yychar, yytext());}
+
+
+.	{System.out.println("Este es un error lexico: "+yytext()+    ", en la linea: "+yyline+", en la columna: "+yychar); System.exit(0);}

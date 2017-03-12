@@ -1,0 +1,24 @@
+
+Titulo: Isla de Koch
+
+Comentarios
+Ver el ejemplo 5 en el documento del enunciado del proyecto.
+
+Comentarios
+Ver el ejemplo 5 en el documento del enunciado del proyecto
+
+Gramatica
+simbolo F1f
+
+Condiciones
+pasos 4
+angulo 90
+posicion (1.0,1.0) 90
+
+matriz
+#F--$--F--$--#F--$--#F
+
+generatriz
+F ->
+#F--$--#F--&--#F--&--#F--#F--$--#F--$--#F--&--#F
+

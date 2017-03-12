@@ -1,0 +1,269 @@
+
+/*
+ * Ejemplo desarrollado por Erick Navarro
+ * Blog: e-navarro.blogspot.com
+ * Septiembre - 2015
+ */
+
+package analizadores; 
+import java_cup.runtime.*;
+import utilidades.*;
+
+action code {:
+
+    TablaTipos tabla;
+
+    void setTitulo(String nombrePrograma){
+        tabla.setNombrePrograma(nombrePrograma);
+    }
+
+    void inicializar(){
+        tabla = new TablaTipos();
+    }
+
+    void addSimbolo(String nombre, String tipoBase, Float valor){
+        tabla.agregaTipo(nombre, tipoBase, valor);
+    }
+
+    boolean existeSimbolo(String nombre){
+        return tabla.existeTipo(nombre);
+    }
+
+    Tipo getTipo(String nombre){
+        return tabla.getTipo(nombre);
+    }
+
+    void print(){
+        tabla.print();
+    }
+
+
+:}
+
+parser code 
+{:
+    /**
+     * Método al que se llama automáticamente ante algún error sintactico.
+     **/ 
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico en la Línea " + (s.left) + " Columna " + s.right+ ". No se esperaba este componente: " +s.value+"."); 
+    } 
+
+    /**
+     * Método al que se llama automáticamente ante algún error sintáctico 
+     * en el que ya no es posible una recuperación de errores.
+     **/ 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable en la Línea " + 
+        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
+        " no reconocido."); 
+    }  
+:} 
+
+terminal String TITULO, COMENTARIOS, GRAMATICA, CONDICIONES, FIN;
+terminal String MATRIZ, GENERATRIZ, PARAMETRO, PASOS, ANGULO, POSICION, VALOR, SIMBOLO, PROBABILIDAD, NOM_SIMBOL;
+terminal  OP_SUMA, OP_RESTA, OP_PRODUCTO, OP_DIVISION, OP_MOD, OP_POTENCIA, OP_LOG, OP_ASSIGN, UMINUS;
+terminal String OP_AND, OP_OR, OP_MENOR, OP_MAYOR, OP_IGUAL, OP_DIF;
+terminal String FLECHA, DOBLERAYA, PUSH, POP, MOV, TURN;
+terminal String DOSPTS, COMA, LP, RP, TYPE; 
+terminal String DOBLESALTO;
+terminal Float NUMERO;
+terminal String NOM_PARAM;
+
+non terminal program, secciones, comentarios, gramatica;
+
+non terminal simbolos, simbolo, list_param, param, condiciones;
+
+non terminal movimiento, movimientos, turn, matriz, expr, list_expr;
+
+non terminal generatriz, list_gen, probabilidad, mov_emp, expr_log, mov_generatriz, movs_generatriz;
+
+non terminal Float expr_part,expr_t, expr_f, expr_g, expr_h, expr_e, expr_i, expr_j, expr_k, expr_l, expr_m, expr_n;
+
+non terminal String sec_param, parametros, paramvariables, paramfunc, valor, funcion;
+
+non terminal list_simb;
+
+precedence left DOBLERAYA;
+precedence left NOM_SIMBOL;
+precedence left MOV;
+
+precedence left PARAMETRO;
+precedence left OP_OR, OP_AND;
+precedence left OP_IGUAL, OP_DIF, OP_MAYOR, OP_MENOR;     
+precedence left OP_SUMA, OP_RESTA;
+precedence left OP_PRODUCTO, OP_DIVISION, OP_MOD;
+precedence left OP_POTENCIA, OP_LOG;
+precedence left LP, RP;
+precedence left OP_ASSIGN; 
+precedence left UMINUS;
+
+
+start with program; 
+
+program::= {:inicializar();:} secciones;
+
+secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO comentarios gramatica DOBLESALTO {: print(); :} condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen DOBLESALTO FIN;
+
+comentarios::= COMENTARIOS DOBLESALTO | ;
+
+gramatica::= GRAMATICA sec_param simbolos;
+
+sec_param::=  valor:v parametros:p | ;
+
+parametros ::= paramvariables:l paramfunc:r ;
+
+paramvariables::= paramvariables:l valor:v paramfunc:r | ;
+
+paramfunc ::= paramfunc:l funcion:f | ;
+
+valor::=  PARAMETRO NOM_PARAM:l DOSPTS TYPE:t VALOR NUMERO:n    {:
+                                                                    if (t.equals("Int"))
+                                                                        if(n % 1 > 0){
+                                                                            System.out.println("ERROR! no se puede guardar " + n + " en tipo Int");
+                                                                            System.exit(0);
+                                                                        }
+                                                                    if(existeSimbolo(l)){
+                                                                        System.out.println("ERROR! " + l + " declarada previamente");
+                                                                        System.exit(0);
+                                                                    }
+                                                                    else
+                                                                        addSimbolo(l, t, n);
+                                                                :};
+     
+
+funcion::= PARAMETRO NOM_PARAM:l DOSPTS TYPE:t OP_ASSIGN expr_e:e   {:
+
+                                                                        if (t.equals("Int"))
+                                                                            if(e % 1 > 0){
+                                                                                System.out.println("ERROR! no se puede guardar " + e + " en Int");
+                                                                                System.exit(0);
+                                                                            }
+                                                                        if(existeSimbolo(l)){
+                                                                            System.out.println("ERROR! " + l + " declarada previamente");
+                                                                            System.exit(0);
+                                                                        }
+                                                                        else
+                                                                            addSimbolo(l, t, e);
+                                                                    :};
+
+
+
+list_simb ::= simbolo simbolos;
+
+simbolos::= simbolo simbolos | ; 
+
+simbolo::= SIMBOLO NOM_SIMBOL:l list_param  {:
+                                                if(existeSimbolo(l)){
+                                                    System.out.println("ERROR! " + l + " declarada previamente");
+                                                    System.exit(0);
+                                                }
+                                                else
+                                                    addSimbolo(l, "Simbolo", null);
+                                            :};
+
+list_param::= LP param RP | ;
+
+param::= expr_e | expr_e COMA param |;
+
+condiciones::= CONDICIONES PASOS expr_e:p ANGULO expr_e:a POSICION LP expr_e COMA NUMERO RP expr_e:ai   {:
+                                                                                                            if((p % 1 != 0) || (p < 0)){
+                                                                                                                System.out.println("ERROR SEMANTICO! la cantidad de pasos debe ser un numero natural mayor que 0");
+                                                                                                                System.exit(0);
+                                                                                                            }
+                                                                                                            if(!((a < 90) && (a > 0))){
+                                                                                                                System.out.println("ERROR SEMANTICO! el angulo debe estar entre 0 y 90");
+                                                                                                                System.exit(0);
+                                                                                                            }
+                                                                                                            if(!((ai < 180) && (ai > 0))){
+                                                                                                                System.out.println("ERROR SEMANTICO! el angulo de posicion inicial debe estar entre 0 y 180");
+                                                                                                                System.exit(0);
+                                                                                                            }
+                                                                                                        :};
+
+matriz::= MATRIZ movimientos;
+
+movimientos::= movimiento DOBLERAYA movimientos | movimiento | mov_emp DOBLERAYA movimientos; 
+
+mov_emp::= PUSH movimientos POP;
+
+movimiento::= MOV NOM_SIMBOL list_param | turn; 
+
+turn::= TURN LP expr_e RP | TURN; 
+
+generatriz::= NOM_SIMBOL list_param DOSPTS expr_log FLECHA probabilidad movs_generatriz 
+              | NOM_SIMBOL FLECHA probabilidad movs_generatriz;
+
+probabilidad::= PROBABILIDAD NUMERO | ;
+
+movs_generatriz::= mov_generatriz DOBLERAYA movs_generatriz | movimientos;
+
+list_gen::= generatriz list_gen | generatriz;
+
+expr_log ::=    expr_log OP_OR expr_log                 
+            |
+                expr_log OP_AND expr_log                   
+            |
+                expr_part OP_IGUAL expr_part                
+            |
+                expr_part OP_DIF expr_part                  
+            |
+                expr_part OP_MAYOR expr_part                
+            |
+                expr_part OP_MENOR expr_part
+            |   
+                LP expr_log RP;                            
+
+
+
+expr_part ::= expr_e:e ;
+
+
+expr_e ::=  expr_e:l OP_SUMA expr_t:r {: RESULT=new Float(l.floatValue() + r.floatValue()); :}
+            |
+            expr_t:e {: RESULT=e; :}
+            ;
+ 
+expr_t ::=  expr_t:l OP_RESTA expr_f:r {: RESULT=new Float(l.floatValue() - r.floatValue()); :}
+            |
+            expr_f:e {: RESULT=e; :}
+            ;
+
+expr_f ::=  expr_f:l OP_PRODUCTO expr_g:r {: RESULT=new Float(l.floatValue() * r.floatValue()); :}
+            | 
+            expr_g:e {: RESULT=e; :}
+            ;
+         
+expr_g ::=  expr_g:l OP_DIVISION expr_i:r {: RESULT=new Float(l.floatValue() / r.floatValue()); :}
+            |
+            expr_i:e {: RESULT=e; :}
+            ;
+         
+expr_i ::=  expr_i:l OP_POTENCIA expr_j:r {: RESULT= new Float((int) Math.pow(l.floatValue(),r.floatValue()));:}
+            |
+            expr_j:e {: RESULT=e; :}
+            ;
+
+expr_j ::=  OP_LOG LP expr_e:e RP {: RESULT= new Float((int) Math.log(e));:} 
+            |
+            expr_k:e {: RESULT=e; :}
+            ;
+         
+expr_k ::=  expr_k:l OP_MOD expr_h:r {: RESULT = new Float(l.floatValue() % r.floatValue());:}
+            |
+            expr_h:e {: RESULT=e; :}
+            ;
+
+expr_h ::=  LP expr_e:e RP {: RESULT=e; :}
+            |
+            NUMERO:n {: RESULT=n; :} 
+            | 
+            OP_RESTA expr_h:r {: RESULT = new Float(0-r.floatValue());:} %prec UMINUS
+            | 
+            NOM_PARAM:n {: 
+                            if(!existeSimbolo(n)){
+                                System.out.println("ERROR SEMANTICO! " + n + " no se encuantra declarada");
+                                System.exit(0);
+                            }
+                            RESULT=new Float(getTipo(n).getValor()); :} 
+            ;

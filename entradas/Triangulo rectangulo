@@ -1,0 +1,28 @@
+Titulo: Trianguo rectangulo.
+
+Comentarios
+Ver el ejemplo 7 en el documento del enunciado del proyecto.
+
+Gramatica
+parametro c:real valor 1.0
+parametro p:Real valor 0.3
+parametro q:Real := c-p
+Parametro
+parametro h:Real := (p*q)^0.5
+simbolo F(x,t)
+ 
+Condiciones
+pasos 10
+angulo 86
+posicion (0.0,0.0) 90
+
+matriz
+#F(1,0)
+
+generatriz
+F(x,t):t=0 ->
+#F(x*p,2)--&--#F(x*h,1)--$--$--#F(x*h,1)--&--#F(x*q,0)
+F(x,t):t>0 ->
+#F(x,t-1)
+
+Fin
