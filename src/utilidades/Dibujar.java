@@ -14,11 +14,10 @@ import java.util.List;
  */
 public class Dibujar {
     public static void dibujar(){
-        LSystem.imprimir();
-        System.out.println("I was called");
+        LSystem.imprimir(); //NOTA: LA MATRIZ QUE SE IMPRIME NO ES LA QUE SE DIBUJA. SE LE ELIMINA EL TO
         List<String> simbolos = LSystem.simbolos;
         List<String> con = LSystem.con;
-        List<String> matriz = LSystem.depurarMatriz();
+        List<String> matriz = LSystem.depurarMatriz(); // SE ELIMINA EL TO
         System.out.println(matriz);
         List<String> generatriz = LSystem.generatriz;
         List<String> numOp = LSystem.numOp;
