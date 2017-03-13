@@ -1,11 +1,13 @@
 package analizadores;
 import java_cup.runtime.Symbol; 
+import utilidades.*;
 
 %% 
 
 %eofval{
-    {System.out.printf("FIN DE ARCHIVO\n");}
-    {System.exit(0); }
+    {System.out.printf("FIN DE ARCHIVO\n");
+    System.exit(0);
+    }
 %eofval}
 
 %class Lexico
@@ -30,7 +32,8 @@ NOM_PARAM = [a-z]({LETRA}|{DIGITO})*
 NOM_SIMBOL = [A-Z]{DIGITO}*
 NUMERO = {DIGITO}+("."{DIGITO}+)?
 TYPE = ("Real"|"Int")
-COMENTARIOS = "Comentarios"({LETRA}|" "|{DIGITO}|{SALTO}|.)*"."
+PUNTO = "."
+COMENTARIOS = "Comentarios"({LETRA}|" "|{DIGITO}|{SALTO})*"."
 
 %%
 

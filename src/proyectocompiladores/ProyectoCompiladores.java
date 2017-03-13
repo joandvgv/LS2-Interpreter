@@ -4,9 +4,8 @@
  * and open the template in the editor.
  */
 package proyectocompiladores;
-import java.io.File;
 import java.io.FileInputStream;
-import java.util.Scanner;
+import utilidades.Dibujar;
 
 /**
  *
@@ -32,6 +31,7 @@ public class ProyectoCompiladores {
 //            System.exit(0); 
 //        interpretar(ficheros[opcion].getPath());
           interpretar("entradas/prueba");
+         // Dibujar.dibujar();
    
     }
     
@@ -39,7 +39,9 @@ public class ProyectoCompiladores {
         analizadores.Sintactico pars;
         try {
             pars=new analizadores.Sintactico(new analizadores.Lexico(new FileInputStream(path)));
-            pars.parse();        
+            pars.parse();  
+        // based on fractal
+        //createFractal("F[F+F+F[+F]F]FFF", brackTest, brackTest2, 60);
         } catch (Exception ex) {
             System.out.println("Error fatal en compilación de entrada.");
             System.out.println("Causa: "+ex.getCause());

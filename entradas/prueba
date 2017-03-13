@@ -1,11 +1,15 @@
 Titulo: Arbusto.
 
 Comentarios
-Ver el ejemplo 6 en el documento canción del enunciado del proyecto.
+Ver el ejemplo 6 en el documento del enunciado del proyecto.
 
 Gramatica
-simbolo X
+parametro c:Real valor 1.0
+parametro t:Real valor 1.0
+parametro u:Real valor 1.0
+parametro p:Real valor 1.0
 simbolo F
+simbolo X
 
 Condiciones
 pasos 7
