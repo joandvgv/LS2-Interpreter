@@ -92,25 +92,22 @@ action code {:
 
 parser code 
 {:
-    /**
-     * Método al que se llama automáticamente ante algún error sintactico.
-     **/ 
-    public void syntax_error(Symbol s){ 
-        System.out.println("Error Sintáctico en la Línea " + (s.left) + " Columna " + s.right+ ". No se esperaba este componente: " +s.value+"."); 
-    } 
+    // Método al que se llama automáticamente ante algún error sintactico recuperable.
+    public void syntax_error(Symbol s){ } 
 
-    /**
-     * Método al que se llama automáticamente ante algún error sintáctico 
-     * en el que ya no es posible una recuperación de errores.
-     **/ 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        System.out.println("Error síntactico irrecuperable en la Línea " + 
-        (s.left)+ " Columna "+s.right+". Componente " + s.value + 
-        " no reconocido."); 
+    // Método al que se llama automáticamente ante algún error sintáctico irrecuperable. 
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+        /*
+        String a = (String) s.value;
+        char c = a.charAt(0);
+        String b = String.format("%04x", (int) c);
+        System.out.println("Error síntactico ("+s.left+", "+s.right+") componente: "+s.value+" hex: "+b);
+        */
+        System.out.println("Error síntactico en Línea "+s.left+" Columna "+s.right+". Componente " + s.value + " no reconocido."); 
     }  
 :} 
 
-terminal String TITULO, COMENTARIOS, GRAMATICA, CONDICIONES, FIN;
+terminal String TITULO, GRAMATICA, CONDICIONES, FIN;
 terminal String MATRIZ, GENERATRIZ, PARAMETRO, PASOS, ANGULO, POSICION, VALOR, SIMBOLO, PROBABILIDAD, NOM_SIMBOL;
 terminal  OP_SUMA, OP_RESTA, OP_PRODUCTO, OP_DIVISION, OP_MOD, OP_POTENCIA, OP_LOG, OP_ASSIGN, UMINUS;
 terminal String OP_AND, OP_OR, OP_MENOR, OP_MAYOR, OP_IGUAL, OP_DIF;
@@ -120,7 +117,7 @@ terminal String DOBLESALTO;
 terminal Float NUMERO;
 terminal String NOM_PARAM;
 
-non terminal program, secciones, comentarios, gramatica;
+non terminal program, secciones, gramatica;
 
 non terminal simbolos, simbolo, list_param, param, condiciones;
 
@@ -161,9 +158,7 @@ dibujar::= program {:dibujar();:};
 
 program::= {:inicializar();:} secciones;
 
-secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO comentarios gramatica DOBLESALTO condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen DOBLESALTO FIN;
-
-comentarios::= COMENTARIOS DOBLESALTO | ;
+secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO gramatica DOBLESALTO condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen DOBLESALTO FIN;
 
 gramatica::= GRAMATICA sec_param list_simb;
 
@@ -214,7 +209,11 @@ simbolo::= SIMBOLO NOM_SIMBOL:l list_param  {:
 
 list_param::= LP param RP | ;
 
-param::= expr_e | expr_e COMA param |;
+param::= expr_e 
+         |
+         expr_e COMA param 
+         | 
+         ;
 
 condiciones::= CONDICIONES PASOS expr_e:p ANGULO expr_e:a POSICION LP expr_e COMA NUMERO RP expr_e:ai   {:
                                                                                                             if((p % 1 != 0) || (p < 0)){
@@ -236,38 +235,48 @@ condiciones::= CONDICIONES PASOS expr_e:p ANGULO expr_e:a POSICION LP expr_e COM
 
 matriz::= MATRIZ movimientos:e {: RESULT = e; addMatriz(traducir(e));:};
 
-movimientos::= movimiento:m DOBLERAYA:dr movimientos:mv {: RESULT=m + dr + mv;:} 
-               | movimiento:m                           {: RESULT = m; :} 
-               | mov_emp:me DOBLERAYA:dr movimientos:mv {: RESULT = me + dr + mv;:}; 
+movimientos::=  movimiento:m DOBLERAYA:dr movimientos:mv    {: RESULT=m + dr + mv;:} 
+                | 
+                movimiento:m                                {: RESULT = m; :} 
+                |
+                mov_emp:me DOBLERAYA:dr movimientos:mv      {: RESULT = me + dr + mv;:}; 
 
-mov_emp::= PUSH:pu movimientos:mv POP:po {: RESULT=pu + mv + po; addCon(traducir(pu)); addCon(traducir(po)); addNumop(traducir(pu)); addNumop(traducir(po));:};
+mov_emp::= PUSH:pu movimientos:mv POP:po        {: RESULT=pu + mv + po; addCon(traducir(pu)); addCon(traducir(po)); addNumop(traducir(pu)); addNumop(traducir(po));:};
 
-movimiento::= MOV:m NOM_SIMBOL:ns list_param {: RESULT = m + ns; :} 
-              | turn:t                       {:RESULT = t; :}; 
+movimiento::= MOV:m NOM_SIMBOL:ns list_param    {: RESULT = m + ns; :} 
+              | 
+              turn:t                            {:RESULT = t; :}; 
 
-turn::= TURN LP expr_e RP | TURN:t {:RESULT = t; addCon(traducir(t)); addNumop(traducir(t));:} ; 
+turn::= TURN LP expr_e RP 
+        |
+        TURN:t      {:RESULT = t; addCon(traducir(t)); addNumop(traducir(t));:} ; 
 
-generatriz::= NOM_SIMBOL:ns list_param:lp DOSPTS:dp expr_log:el FLECHA:f probabilidad:p movimientos:m  {: RESULT = ns + lp +dp+ el + f + p +m;:}
-              | NOM_SIMBOL:ns FLECHA:f probabilidad:p movimientos:m {: RESULT = ns + f + p +m; addGeneratriz(traducir(RESULT));  dibujar();:};
+generatriz::=   NOM_SIMBOL:ns list_param:lp DOSPTS:dp expr_log:el FLECHA:f probabilidad:p movimientos:m   {: RESULT = ns + lp +dp+ el + f + p +m;:}
+                |
+                NOM_SIMBOL:ns FLECHA:f probabilidad:p movimientos:m                                        {: RESULT = ns + f + p +m; addGeneratriz(traducir(RESULT));  dibujar();:};
 
-probabilidad::= PROBABILIDAD NUMERO:n {: RESULT = String.valueOf(n); setProbabilidad(Math.round(n));:}| ;
+probabilidad::= PROBABILIDAD NUMERO:n {: RESULT = String.valueOf(n); setProbabilidad(Math.round(n));:}  | ;
 
-movs_generatriz::= mov_generatriz:p DOBLERAYA movs_generatriz | movimientos;
+movs_generatriz::=  mov_generatriz:p DOBLERAYA movs_generatriz 
+                    |
+                    movimientos;
 
-list_gen::= generatriz list_gen | generatriz;
+list_gen::= generatriz list_gen 
+            |
+            generatriz;
 
 expr_log ::=    expr_log OP_OR expr_log                 
-            |
+                |
                 expr_log OP_AND expr_log                   
-            |
+                |   
                 expr_part OP_IGUAL expr_part                
-            |
+                |
                 expr_part OP_DIF expr_part                  
-            |
+                |
                 expr_part OP_MAYOR expr_part                
-            |
-                expr_part OP_MENOR expr_part
-            |   
+                |
+                expr_part OP_MENOR expr_part    
+                |   
                 LP expr_log RP;                            
 
 

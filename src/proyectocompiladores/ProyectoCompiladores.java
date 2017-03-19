@@ -4,7 +4,10 @@
  * and open the template in the editor.
  */
 package proyectocompiladores;
+
+import java.io.File;
 import java.io.FileInputStream;
+import java.util.Scanner;
 import utilidades.Dibujar;
 
 /**
@@ -14,7 +17,7 @@ import utilidades.Dibujar;
 public class ProyectoCompiladores {
 
     public static void main(String[] args) {
-//        File f = new File("entradas");
+////        File f = new File("entradas");
 //        File[] ficheros = f.listFiles();
 //       
 //        System.out.println("0) Salir");
@@ -30,8 +33,9 @@ public class ProyectoCompiladores {
 //        if(opcion < 0 || opcion > ficheros.length - 1)
 //            System.exit(0); 
 //        interpretar(ficheros[opcion].getPath());
+//          interpretar("entradas/Arbusto estocastico");
           interpretar("entradas/prueba");
-         // Dibujar.dibujar();
+//          Dibujar.dibujar();
    
     }
     

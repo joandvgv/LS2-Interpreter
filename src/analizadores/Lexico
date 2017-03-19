@@ -33,8 +33,7 @@ NOM_SIMBOL = [A-Z]{DIGITO}*
 NUMERO = {DIGITO}+("."{DIGITO}+)?
 TYPE = ("Real"|"Int")
 PUNTO = "."
-COMENTARIOS = "Comentarios"({LETRA}|" "|{DIGITO}|{SALTO})*"."
-
+COMENTARIOS = "Comentarios"([\n]|.)*"."[\n][\n]
 %%
 
 ":="			{return new Symbol(sym.OP_ASSIGN,yyline, yychar, yytext());}
@@ -45,11 +44,11 @@ COMENTARIOS = "Comentarios"({LETRA}|" "|{DIGITO}|{SALTO})*"."
 "%"				{return new Symbol(sym.OP_MOD,yyline, yychar, yytext());}
 "^"				{return new Symbol(sym.OP_POTENCIA,yyline, yychar, yytext());}
 "log"			{return new Symbol(sym.OP_LOG,yyline, yychar, yytext());}
-"AND"			{System.out.println("encontre un and"); return new Symbol(sym.OP_AND,yyline, yychar, yytext());}
+"AND"			{return new Symbol(sym.OP_AND,yyline, yychar, yytext());}
 "OR"			{return new Symbol(sym.OP_OR,yyline, yychar, yytext());}
 "<"				{return new Symbol(sym.OP_MENOR,yyline, yychar, yytext());}
 ">"				{return new Symbol(sym.OP_MAYOR,yyline, yychar, yytext());}
-"="  			{System.out.println("IGUAL"); return new Symbol(sym.OP_IGUAL,yyline, yychar, yytext());}
+"="  			{return new Symbol(sym.OP_IGUAL,yyline, yychar, yytext());}
 "=!"			{return new Symbol(sym.OP_DIF,yyline, yychar, yytext());}
 
 ":"    			{return new Symbol(sym.DOSPTS,yyline, yychar, yytext());}
@@ -78,14 +77,15 @@ COMENTARIOS = "Comentarios"({LETRA}|" "|{DIGITO}|{SALTO})*"."
 {SALTO}    		{yychar=1;}
 {SALTO}{SALTO}  {yychar=1;return new Symbol(sym.DOBLESALTO,yyline, yychar, yytext());}
 
-{TITULO}   		{return new Symbol(sym.TITULO,yyline, yychar, yytext().substring(7,yytext().length()-1));}
-{COMENTARIOS}   {System.out.println(yytext()); return new Symbol(sym.COMENTARIOS,yyline, yychar, yytext());}
+{TITULO}   		{System.out.println(yytext()); return new Symbol(sym.TITULO,yyline, yychar, yytext().substring(7,yytext().length()-1));}
 {TYPE}  		{return new Symbol(sym.TYPE,yyline, yychar, yytext());}
 {NUMERO}  		{return new Symbol(sym.NUMERO, yyline, yychar, new Float(yytext()));}
 {MOV}   		{return new Symbol(sym.MOV,yyline, yychar, yytext());}
 {TURN}  		{return new Symbol(sym.TURN,yyline, yychar, yytext());}
 {NOM_SIMBOL}    {return new Symbol(sym.NOM_SIMBOL,yyline, yychar, yytext());}
 {NOM_PARAM} 	{return new Symbol(sym.NOM_PARAM,yyline, yychar, yytext());}
+{COMENTARIOS}   {yychar=1; System.out.println(yytext());}
+
 
 
 .	{System.out.println("Este es un error lexico: "+yytext()+    ", en la linea: "+yyline+", en la columna: "+yychar); System.exit(0);}

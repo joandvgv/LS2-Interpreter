@@ -1,13 +1,11 @@
 Titulo: Arbusto.
 
-Comentarios
-Ver el ejemplo 6 en el documento del enunciado del proyecto.
+Comentarios Ver el ejemplo 6 en el documento del enunciado del proyecto.
 
 Gramatica
 parametro c:Real valor 1.0
-parametro t:Real valor 1.0
-parametro u:Real valor 1.0
-parametro p:Real valor 1.0
+parametro q:Real := 1 + 1
+
 simbolo F
 simbolo X
 
