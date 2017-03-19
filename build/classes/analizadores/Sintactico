@@ -119,7 +119,7 @@ terminal String NOM_PARAM;
 
 non terminal program, secciones, gramatica;
 
-non terminal simbolos, simbolo, list_param, param, condiciones;
+non terminal simbolos, param, condiciones;
 
 non terminal String movimiento, movimientos, turn, matriz, expr, list_expr;
 
@@ -129,9 +129,9 @@ non terminal list_gen, probabilidad, mov_emp, expr_log;
 
 non terminal Float expr_part,expr_t, expr_f, expr_g, expr_h, expr_e, expr_i, expr_j, expr_k, expr_l, expr_m, expr_n;
 
-non terminal String sec_param, parametros, paramvariables, paramfunc, valor, funcion;
+non terminal String paramvariables, paramfunc, valor, funcion;
 
-non terminal list_simb;
+non terminal sec_param, sec_simb, sec_param_valor, sec_param_expr, param_valor, param_expr, simbolo, list_param, parametros;
 
 non terminal dibujar;
 
@@ -160,7 +160,7 @@ program::= {:inicializar();:} secciones;
 
 secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO gramatica DOBLESALTO condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen DOBLESALTO FIN;
 
-gramatica::= GRAMATICA sec_param list_simb;
+gramatica::= GRAMATICA sec_param sec_simb;
 
 sec_param::=  valor:v parametros | ;
 
@@ -191,7 +191,7 @@ funcion::= PARAMETRO NOM_PARAM:l DOSPTS TYPE:t expr_assign;
 
 expr_assign::= OP_ASSIGN expr_e;
 
-list_simb ::= simbolo simbolos;
+sec_simb ::= simbolo simbolos;
 
 simbolos::= simbolo simbolos | ; 
 
