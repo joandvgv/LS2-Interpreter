@@ -5,7 +5,6 @@ Comentarios Ver el ejemplo 6 en el documento del enunciado del proyecto.
 Gramatica
 parametro c:Real valor 1.0
 parametro q:Real := 1 + 1
-
 simbolo F
 simbolo X
 
