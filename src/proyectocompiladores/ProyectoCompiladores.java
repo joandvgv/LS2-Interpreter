@@ -17,7 +17,7 @@ import utilidades.Dibujar;
 public class ProyectoCompiladores {
 
     public static void main(String[] args) {
-////        File f = new File("entradas");
+//        File f = new File("entradas");
 //        File[] ficheros = f.listFiles();
 //       
 //        System.out.println("0) Salir");
@@ -34,9 +34,9 @@ public class ProyectoCompiladores {
 //            System.exit(0); 
 //        interpretar(ficheros[opcion].getPath());
 //          interpretar("entradas/Arbusto estocastico");
-          interpretar("entradas/prueba");
+//          interpretar("entradas/Triangulo rectangulo");
+            interpretar("entradas/prueba");
 //          Dibujar.dibujar();
-   
     }
     
     private static void interpretar(String path) {

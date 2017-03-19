@@ -1,25 +1,31 @@
-Titulo: Arbusto.
+1<0.1
+Titulo: Trianguo rectangulo.
 
-Comentarios Ver el ejemplo 6 en el documento del enunciado del proyecto.
+Comentarios
+Ver el ejemplo 7 en el documento del enunciado del proyecto.
 
 Gramatica
 parametro c:Real valor 1.0
-parametro q:Real := 1 + 1
-simbolo F
-simbolo X
+parametro p:Real valor 0.3
+parametro q:Real := c-p
+parametro h:Real := (p*q)^0.5
+parametro x:Int valor 2
+parametro t:Int valor 2
+simbolo F(x,t)
 
 Condiciones
-pasos 7
-angulo 20
+pasos 10
+angulo 86
 posicion (0.0,0.0) 90
 
 matriz
-#X
+#F(1,0)
 
 generatriz
-X ->
-#F--{&--#X}--#F--{$--#X}--&--#X
-F->
-#F--#F
+F(x,t):t=0 ->
+#F(x*p,2)--&--#F(x*h,1)--$--$--#F(x*h,1)--&--#F(x*q,0)
+
+F(x,t):t>0 ->
+#F(x,t-1)
 
 Fin

@@ -103,14 +103,14 @@ parser code
         String b = String.format("%04x", (int) c);
         System.out.println("Error síntactico ("+s.left+", "+s.right+") componente: "+s.value+" hex: "+b);
         */
-        System.out.println("Error síntactico en Línea "+s.left+" Columna "+s.right+". Componente " + s.value + " no reconocido."); 
+        System.out.println("Error síntactico en Línea " + s.left + " Columna " + s.right + ". \"" + s.value + "\" no se esperaba."); 
     }  
 :} 
 
 terminal String TITULO, GRAMATICA, CONDICIONES, FIN;
 terminal String MATRIZ, GENERATRIZ, PARAMETRO, PASOS, ANGULO, POSICION, VALOR, SIMBOLO, PROBABILIDAD, NOM_SIMBOL;
-terminal  OP_SUMA, OP_RESTA, OP_PRODUCTO, OP_DIVISION, OP_MOD, OP_POTENCIA, OP_LOG, OP_ASSIGN, UMINUS;
-terminal String OP_AND, OP_OR, OP_MENOR, OP_MAYOR, OP_IGUAL, OP_DIF;
+terminal OP_SUMA, OP_RESTA, OP_PRODUCTO, OP_DIVISION, OP_MOD, OP_POTENCIA, OP_LOG, OP_ASSIGN, UMINUS;
+terminal String OP_AND, OP_OR, OP_MENOR, OP_MENOR_IG, OP_MAYOR_IG, OP_MAYOR, OP_IGUAL, OP_DIF, OP_NOT;
 terminal String FLECHA, DOBLERAYA, PUSH, POP, MOV, TURN;
 terminal String DOSPTS, COMA, LP, RP, TYPE; 
 terminal String DOBLESALTO;
@@ -125,9 +125,11 @@ non terminal String movimiento, movimientos, turn, matriz, expr, list_expr;
 
 non terminal String mov_generatriz, movs_generatriz, generatriz;
 
-non terminal list_gen, probabilidad, mov_emp, expr_log;
+non terminal list_gen, probabilidad, mov_emp;
 
-non terminal Float expr_part,expr_t, expr_f, expr_g, expr_h, expr_e, expr_i, expr_j, expr_k, expr_l, expr_m, expr_n;
+non terminal Float expr_e,expr_t, expr_f, expr_g, expr_h, expr_i, expr_j, expr_k, expr_l, expr_m, expr_n;
+
+non terminal Boolean expr_log;
 
 non terminal String paramvariables, paramfunc, valor, funcion;
 
@@ -142,8 +144,8 @@ precedence left NOM_SIMBOL;
 precedence left MOV;
 
 precedence left PARAMETRO;
-precedence left OP_OR, OP_AND;
-precedence left OP_IGUAL, OP_DIF, OP_MAYOR, OP_MENOR;     
+precedence left OP_OR, OP_AND, OP_NOT;
+precedence left OP_IGUAL, OP_DIF, OP_MAYOR, OP_MAYOR_IG, OP_MENOR_IG, OP_MENOR;     
 precedence left OP_SUMA, OP_RESTA;
 precedence left OP_PRODUCTO, OP_DIVISION, OP_MOD;
 precedence left OP_POTENCIA, OP_LOG;
@@ -154,30 +156,45 @@ precedence left UMINUS;
 
 start with dibujar; 
 
-dibujar::= program {:dibujar();:};
+dibujar::= expr_log:l {:if(l)System.out.println("true"); else System.out.println("false");:} program {:dibujar();:};
 
 program::= {:inicializar();:} secciones;
 
-secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO gramatica DOBLESALTO condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen DOBLESALTO FIN;
+secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO  gramatica {:print();:} DOBLESALTO  condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen FIN;
 
 
 gramatica::= GRAMATICA sec_param sec_simb;
 
-sec_param::=    sec_param_valor sec_param_expr  
-                | 
-                {://System.out.println("sec_param -> sec_param_expr");:} sec_param_valor 
-                | 
-                {:System.out.println("sec_param -> sec_param_expr");:} sec_param_expr 
-                | 
-                ;
+sec_param::= param_valor sec_param | param_expr sec_param | ;
 
-sec_param_valor::= param_valor sec_param_valor | param_valor;
+param_valor::=  PARAMETRO NOM_PARAM:l DOSPTS TYPE:t VALOR NUMERO:n  {:
+                                                                        if(existeSimbolo(l)){
+                                                                            System.out.println("ERROR! " + l + " declarada previamente");
+                                                                            System.exit(0);
+                                                                        }
+                                                                        else
+                                                                            addSimbolo(l, t, n);
+                                                                        if (t.equals("Int"))
+                                                                            if(n % 1 > 0){
+                                                                                System.out.println("ERROR! no se puede guardar " + n + " en tipo Int");
+                                                                                System.exit(0);
+                                                                            }
+                                                                    :};
+     
 
-param_valor::= PARAMETRO NOM_PARAM DOSPTS TYPE:t VALOR NUMERO;
-
-sec_param_expr::= param_expr sec_param_expr | param_expr;
-
-param_expr::= PARAMETRO NOM_PARAM DOSPTS TYPE OP_ASSIGN expr_e;
+param_expr::= PARAMETRO NOM_PARAM:l DOSPTS TYPE:t OP_ASSIGN expr_e:n {:
+                                                                        if(existeSimbolo(l)){
+                                                                            System.out.println("ERROR! " + l + " declarada previamente");
+                                                                            System.exit(0);
+                                                                        }
+                                                                        else
+                                                                            addSimbolo(l, t, n);
+                                                                        if (t.equals("Int"))
+                                                                            if(n % 1 > 0){
+                                                                                System.out.println("ERROR! no se puede guardar " + n + " en tipo Int");
+                                                                                System.exit(0);
+                                                                            }
+                                                                    :};
 
 sec_simb ::= simbolo simbolos;
 
@@ -249,27 +266,29 @@ movs_generatriz::=  mov_generatriz:p DOBLERAYA movs_generatriz
                     |
                     movimientos;
 
-list_gen::= generatriz list_gen 
+list_gen::= generatriz DOBLESALTO list_gen 
             |
-            generatriz;
+            generatriz DOBLESALTO;
 
-expr_log ::=    expr_log OP_OR expr_log                 
+expr_log ::=    expr_log:l OP_OR expr_log:r   {: RESULT=(l || r); :}            
                 |
-                expr_log OP_AND expr_log                   
+                expr_log:l OP_AND expr_log :r {: RESULT=(l && r); :}        
                 |   
-                expr_part OP_IGUAL expr_part                
+                expr_e:l OP_IGUAL expr_e:r    {: RESULT= (l == r); :}                
                 |
-                expr_part OP_DIF expr_part                  
+                expr_e:l OP_DIF expr_e:r      {: RESULT= (l != r); :}                  
                 |
-                expr_part OP_MAYOR expr_part                
+                expr_e:l OP_MAYOR expr_e:r    {: RESULT=(l > r); :}                
                 |
-                expr_part OP_MENOR expr_part    
-                |   
-                LP expr_log RP;                            
-
-
-
-expr_part ::= expr_e:e ;
+                expr_e:l OP_MAYOR_IG expr_e:r {: RESULT=(l >= r); :}                
+                |
+                expr_e:l OP_MENOR_IG expr_e:r {: RESULT=(l <= r); :}              
+                |
+                expr_e:l OP_MENOR expr_e:r    {: RESULT=(l < r); :} 
+                |
+                OP_NOT expr_log:e             {: RESULT=(!e); :}  
+                |                   
+                LP expr_log:e RP              {: RESULT=e; :};                            
 
 
 expr_e ::=  expr_e:l OP_SUMA expr_t:r {: RESULT=new Float(l.floatValue() + r.floatValue()); :}
@@ -292,12 +311,12 @@ expr_g ::=  expr_g:l OP_DIVISION expr_i:r {: RESULT=new Float(l.floatValue() / r
             expr_i:e {: RESULT=e; :}
             ;
          
-expr_i ::=  expr_i:l OP_POTENCIA expr_j:r {: RESULT= new Float((int) Math.pow(l.floatValue(),r.floatValue()));:}
+expr_i ::=  expr_i:l OP_POTENCIA expr_j:r {: RESULT= new Float((float) Math.pow(l.floatValue(),r.floatValue()));:}
             |
             expr_j:e {: RESULT=e; :}
             ;
 
-expr_j ::=  OP_LOG LP expr_e:e RP {: RESULT= new Float((int) Math.log(e));:} 
+expr_j ::=  OP_LOG LP expr_e:e RP {: RESULT= new Float((float) Math.log(e));:} 
             |
             expr_k:e {: RESULT=e; :}
             ;

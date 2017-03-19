@@ -46,8 +46,11 @@ COMENTARIOS = "Comentarios"([\n]|.)*"."[\n][\n]
 "log"			{return new Symbol(sym.OP_LOG,yyline, yychar, yytext());}
 "AND"			{return new Symbol(sym.OP_AND,yyline, yychar, yytext());}
 "OR"			{return new Symbol(sym.OP_OR,yyline, yychar, yytext());}
+"NOT"			{return new Symbol(sym.OP_OR,yyline, yychar, yytext());}
 "<"				{return new Symbol(sym.OP_MENOR,yyline, yychar, yytext());}
+"<="			{return new Symbol(sym.OP_MENOR_IG,yyline, yychar, yytext());}
 ">"				{return new Symbol(sym.OP_MAYOR,yyline, yychar, yytext());}
+">="			{return new Symbol(sym.OP_MENOR_IG,yyline, yychar, yytext());}
 "="  			{return new Symbol(sym.OP_IGUAL,yyline, yychar, yytext());}
 "=!"			{return new Symbol(sym.OP_DIF,yyline, yychar, yytext());}
 
