@@ -1,1 +1,4 @@
-/dist/
+# ignorar los archivos que coincidan con los siguientes patrones 
+
+build/*
+nbproject/*
