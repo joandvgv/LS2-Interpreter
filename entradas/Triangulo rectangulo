@@ -11,7 +11,7 @@ parametro h:Real := (p*q)^0.5
 parametro x:Int valor 2
 parametro t:Int valor 2
 simbolo F(x,t)
- 
+
 Condiciones
 pasos 10
 angulo 86

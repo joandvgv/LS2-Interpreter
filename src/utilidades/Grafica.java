@@ -11,13 +11,14 @@ public class Grafica {
 	String[] cons;
 	String[] axi;
 	String[] rules;
+        
 	
 	public Grafica(String[] variables, String[] constants, String[] axiom, String[] p_rules) {
-		vars = variables;
-		cons = constants;
-		axi = axiom;
-		rules = p_rules;
-		paper = new SketchPad(1000, 1000);
+		vars = variables;   //simbolos
+		cons = constants;   //con 
+		axi = axiom;        //matriz
+		rules = p_rules;    //generatriz
+		paper = new SketchPad(1000, 1000); 
 		pen = new DrawingTool(paper);
 	}
 	

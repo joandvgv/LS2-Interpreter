@@ -153,10 +153,9 @@ precedence left LP, RP;
 precedence left OP_ASSIGN; 
 precedence left UMINUS;
 
-
 start with dibujar; 
 
-dibujar::= expr_log:l {:if(l)System.out.println("true"); else System.out.println("false");:} program {:dibujar();:};
+dibujar::= program {:dibujar();:};
 
 program::= {:inicializar();:} secciones;
 
@@ -246,9 +245,9 @@ movimientos::=  movimiento:m DOBLERAYA:dr movimientos:mv    {: RESULT=m + dr + m
                 |
                 mov_emp:me DOBLERAYA:dr movimientos:mv      {: RESULT = me + dr + mv;:}; 
 
-mov_emp::= PUSH:pu movimientos:mv POP:po        {: RESULT=pu + mv + po; addCon(traducir(pu)); addCon(traducir(po)); addNumop(traducir(pu)); addNumop(traducir(po));:};
+mov_emp::= PUSH:pu movimientos:mv POP:po        {: RESULT=pu + mv + po;  addCon(traducir(pu)); addCon(traducir(po)); addNumop(traducir(pu)); addNumop(traducir(po));:};
 
-movimiento::= MOV:m NOM_SIMBOL:ns list_param    {: RESULT = m + ns; :} 
+movimiento::= MOV:m NOM_SIMBOL:ns list_param:lp    {: RESULT = m + ns + lp;:} 
               | 
               turn:t                            {:RESULT = t; :}; 
 
