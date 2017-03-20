@@ -50,11 +50,12 @@ public class TablaTipos{
     }
     
     public void print(){
-        System.out.println(this.nombrePrograma + " TABLA DE SIMBOLOS: ");
+        System.out.println("TABLA DE PARAMETORS Y SIMBOLOS:" + this.nombrePrograma);
         for(Object i: tabla){
             Tipo t = (Tipo)i;
             t.print();
         }
+        System.out.println("\n");
     }
 
 }

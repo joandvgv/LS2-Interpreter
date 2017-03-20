@@ -48,7 +48,10 @@ public class Tipo {
     
     public void print(){
         if (!(valor == null))
-            System.out.println(nombre + "   " + valor + "   " + tipoBase);
+            if (tipoBase.equals("Int"))
+                System.out.println(nombre + "   " + valor.intValue() + "   " + tipoBase);
+            else
+                System.out.println(nombre + "   " + valor + "   " + tipoBase);
         else
             System.out.println(nombre + "   null   " + tipoBase);
     }

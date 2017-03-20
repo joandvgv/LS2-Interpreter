@@ -653,7 +653,7 @@ public class Lexico implements java_cup.runtime.Scanner {
 					case -42:
 						break;
 					case 42:
-						{System.out.println(yytext()); return new Symbol(sym.TITULO,yyline, yychar, yytext().substring(7,yytext().length()-1));}
+						{return new Symbol(sym.TITULO,yyline, yychar, yytext().substring(7,yytext().length()-1));}
 					case -43:
 						break;
 					case 43:
@@ -685,7 +685,7 @@ public class Lexico implements java_cup.runtime.Scanner {
 					case -50:
 						break;
 					case 50:
-						{yychar=1; System.out.println(yytext());}
+						{yychar=1;}
 					case -51:
 						break;
 					case 52:

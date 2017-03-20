@@ -80,14 +80,14 @@ COMENTARIOS = "Comentarios"([\n]|.)*"."[\n][\n]
 {SALTO}    		{yychar=1;}
 {SALTO}{SALTO}  {yychar=1;return new Symbol(sym.DOBLESALTO,yyline, yychar, yytext());}
 
-{TITULO}   		{System.out.println(yytext()); return new Symbol(sym.TITULO,yyline, yychar, yytext().substring(7,yytext().length()-1));}
+{TITULO}   		{return new Symbol(sym.TITULO,yyline, yychar, yytext().substring(7,yytext().length()-1));}
 {TYPE}  		{return new Symbol(sym.TYPE,yyline, yychar, yytext());}
 {NUMERO}  		{return new Symbol(sym.NUMERO, yyline, yychar, new Float(yytext()));}
 {MOV}   		{return new Symbol(sym.MOV,yyline, yychar, yytext());}
 {TURN}  		{return new Symbol(sym.TURN,yyline, yychar, yytext());}
 {NOM_SIMBOL}    {return new Symbol(sym.NOM_SIMBOL,yyline, yychar, yytext());}
 {NOM_PARAM} 	{return new Symbol(sym.NOM_PARAM,yyline, yychar, yytext());}
-{COMENTARIOS}   {yychar=1; System.out.println(yytext());}
+{COMENTARIOS}   {yychar=1;}
 
 
 

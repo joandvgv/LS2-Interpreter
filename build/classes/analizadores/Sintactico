@@ -97,13 +97,8 @@ parser code
 
     // Método al que se llama automáticamente ante algún error sintáctico irrecuperable. 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
-        /*
-        String a = (String) s.value;
-        char c = a.charAt(0);
-        String b = String.format("%04x", (int) c);
-        System.out.println("Error síntactico ("+s.left+", "+s.right+") componente: "+s.value+" hex: "+b);
-        */
         System.out.println("Error síntactico en Línea " + s.left + " Columna " + s.right + ". \"" + s.value + "\" no se esperaba."); 
+        System.exit(0);
     }  
 :} 
 
@@ -159,7 +154,7 @@ dibujar::= program {:dibujar();:};
 
 program::= {:inicializar();:} secciones;
 
-secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO  gramatica {:print();:} DOBLESALTO  condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen FIN;
+secciones::= TITULO:t {:setTitulo(t);:} DOBLESALTO  gramatica DOBLESALTO {:print();:} condiciones DOBLESALTO matriz DOBLESALTO GENERATRIZ list_gen FIN;
 
 
 gramatica::= GRAMATICA sec_param sec_simb;
@@ -168,14 +163,14 @@ sec_param::= param_valor sec_param | param_expr sec_param | ;
 
 param_valor::=  PARAMETRO NOM_PARAM:l DOSPTS TYPE:t VALOR NUMERO:n  {:
                                                                         if(existeSimbolo(l)){
-                                                                            System.out.println("ERROR! " + l + " declarada previamente");
+                                                                            System.out.println("ERROR SEMANTICO! " + l + " declarada previamente");
                                                                             System.exit(0);
                                                                         }
                                                                         else
                                                                             addSimbolo(l, t, n);
                                                                         if (t.equals("Int"))
                                                                             if(n % 1 > 0){
-                                                                                System.out.println("ERROR! no se puede guardar " + n + " en tipo Int");
+                                                                                System.out.println("ERROR SEMANTICO! no se puede guardar " + n + " en tipo Int");
                                                                                 System.exit(0);
                                                                             }
                                                                     :};
@@ -183,14 +178,14 @@ param_valor::=  PARAMETRO NOM_PARAM:l DOSPTS TYPE:t VALOR NUMERO:n  {:
 
 param_expr::= PARAMETRO NOM_PARAM:l DOSPTS TYPE:t OP_ASSIGN expr_e:n {:
                                                                         if(existeSimbolo(l)){
-                                                                            System.out.println("ERROR! " + l + " declarada previamente");
+                                                                            System.out.println("ERROR SEMANTICO! " + l + " declarada previamente");
                                                                             System.exit(0);
                                                                         }
                                                                         else
                                                                             addSimbolo(l, t, n);
                                                                         if (t.equals("Int"))
                                                                             if(n % 1 > 0){
-                                                                                System.out.println("ERROR! no se puede guardar " + n + " en tipo Int");
+                                                                                System.out.println("ERROR SEMANTICO! no se puede guardar " + n + " en tipo Int");
                                                                                 System.exit(0);
                                                                             }
                                                                     :};
@@ -201,7 +196,7 @@ simbolos::= simbolo simbolos | ;
 
 simbolo::= SIMBOLO NOM_SIMBOL:l list_param  {:
                                                 if(existeSimbolo(l)){
-                                                    System.out.println("ERROR! " + l + " declarada previamente");
+                                                    System.out.println("ERROR SEMANTICO! " + l + " declarada previamente");
                                                     System.exit(0);
                                                 }
                                                 else{
